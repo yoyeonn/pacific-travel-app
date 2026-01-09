@@ -1,26 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-  <div class="container">
-    
-    <a class="navbar-brand" routerLink="/">Pacific<span>Travel Agency</span></a>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
-      aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="oi oi-menu"></span> Menu
-    </button>
-
-    <div class="collapse navbar-collapse" id="ftco-nav">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item"><a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a></li>
-        <li class="nav-item"><a routerLink="/about" class="nav-link" routerLinkActive="active">About</a></li>
-        <li class="nav-item"><a routerLink="/destination" class="nav-link" routerLinkActive="active">Destination</a></li>
-        <li class="nav-item"><a routerLink="/hotel" class="nav-link" routerLinkActive="active">Hotel</a></li>
-        <li class="nav-item"><a routerLink="/blog" class="nav-link" routerLinkActive="active">Blog</a></li>
-        <li class="nav-item"><a routerLink="/contact" class="nav-link" routerLinkActive="active">Contact</a></li>
-      </ul>
-    </div>
-
-  </div>
-</nav>
 
 <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('images/bg_1.jpg');">
   <div class="overlay"></div>
@@ -112,30 +90,28 @@
 <section class="ftco-section">
  <div class="container">
   <div class="row">
-   <div class="col-md-4 ftco-animate">
-    <div class="project-wrap hotel">
-     <a href="#" class="img" style="background-image: url(images/hotel-resto-1.jpg);">
-      <span class="price">$200/person</span>
+   <div *ngFor="let hotel of hotels" class="col-md-4 ftco-animate">
+  <div class="project-wrap hotel">
+    <a [routerLink]="['/hotel', hotel.id]" class="img" [style.background-image]="'url(' + hotel.image + ')'">
+      <span class="price">${{hotel.price}}/person</span>
     </a>
     <div class="text p-4">
       <p class="star mb-2">
-        <span class="fa fa-star"></span>
-        <span class="fa fa-star"></span>
-        <span class="fa fa-star"></span>
-        <span class="fa fa-star"></span>
-        <span class="fa fa-star"></span>
+        <span *ngFor="let star of [].constructor(hotel.stars)" class="fa fa-star"></span>
       </p>
-      <span class="days">8 Days Tour</span>
-      <h3><a href="#">Manila Hotel</a></h3>
-      <p class="location"><span class="fa fa-map-marker"></span> Manila, Philippines</p>
+      <span class="days">{{hotel.days}} Days Tour</span>
+      <h3>
+        <a [routerLink]="['/hotel', hotel.id]">{{hotel.name}}</a>
+      </h3>
+      <p class="location"><span class="fa fa-map-marker"></span> {{hotel.location}}</p>
       <ul>
-       <li><span class="flaticon-shower"></span>2</li>
-       <li><span class="flaticon-king-size"></span>3</li>
-       <li><span class="flaticon-mountains"></span>Near Mountain</li>
-     </ul>
-   </div>
- </div>
+        <li *ngFor="let facility of hotel.facilities">{{facility}}</li>
+      </ul>
+    </div>
+  </div>
 </div>
+
+
 <div class="col-md-4 ftco-animate">
   <div class="project-wrap hotel">
    <a href="#" class="img" style="background-image: url(images/hotel-resto-2.jpg);">

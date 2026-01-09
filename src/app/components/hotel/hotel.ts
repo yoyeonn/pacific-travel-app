@@ -1,15 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { HotelService } from '../../services/hotel.service';
+import { CommonModule } from '@angular/common';
 
 declare var $: any;
 
 @Component({
   selector: 'app-hotel',
-  imports: [RouterModule],
+  imports: [RouterModule,CommonModule],
   templateUrl: './hotel.html',
   styleUrl: './hotel.css',
 })
-export class Hotel {
+export class Hotel implements OnInit {
  ngAfterViewInit(): void {
     this.contentWayPoint();
     this.initOwlCarousel();
@@ -62,5 +64,13 @@ export class Hotel {
         1000: { items: 3 }
       }
     });
+  }
+
+  hotels: any[] = [];
+
+  constructor(private hotelService: HotelService) { }
+
+  ngOnInit(): void {
+    this.hotels = this.hotelService.getHotels();
   }
 }

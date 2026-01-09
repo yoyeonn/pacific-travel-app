@@ -1,0 +1,28 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
+  background-color: #ffffff !important;
+  color: #000 !important;
+}
+.navbar a,
+.navbar .navbar-brand,
+.navbar .nav-link {
+  color: #000 !important;
+}
+
+/* On hover */
+.navbar a:hover,
+.navbar .nav-link:hover {
+  color: #f15d30 !important; /* bootstrap primary blue */
+}
+body {
+  padding-top: 75px;
+}
+li{
+    color: black;
+}

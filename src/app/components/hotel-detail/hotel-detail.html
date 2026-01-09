@@ -1,0 +1,177 @@
+<section class="ftco-section">
+<div class="hotel-detail-page-container">
+<div class="container mt-5" *ngIf="hotel">
+
+  <!-- Hotel Header -->
+  <div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+      <h1 class="hotel-name">{{hotel.name}}</h1>
+      <p class="text-muted"><span class="fa fa-map-marker-alt"></span> {{hotel.location}}</p>
+      <div class="stars">
+        <span *ngFor="let star of [].constructor(hotel.stars)" class="fa fa-star text-warning"></span>
+        <span class="text-muted">({{hotel.reviews?.length || 0}} reviews)</span>
+      </div>
+    </div>
+    <div class="col-md-4 text-md-right mt-3 mt-md-0">
+      <h3 class="price">${{hotel.price}}/night</h3>
+      <button class="btn btn-success btn-lg">Book Now</button>
+    </div>
+  </div>
+
+  <!-- Main Section -->
+  <div class="row mb-5">
+    <!-- Left: Carousel -->
+    <div class="col-md-8">
+      <div class="main-image mb-3">
+        <img [src]="selectedImage" alt="{{hotel.name}}">
+
+        <button (click)="prevImage()" class="carousel-arrow left">&#10094;</button>
+        <button (click)="nextImage()" class="carousel-arrow right">&#10095;</button>
+      </div>
+
+      <div class="thumbnail-images d-flex flex-wrap gap-2">
+        <div *ngFor="let img of hotel.images; let i = index" class="thumbnail-wrapper" (click)="selectImage(i)">
+          <img [src]="img" [class.selected]="selectedImageIndex === i">
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Booking & Amenities -->
+    <div class="col-md-4">
+      <div class="amenities">
+        <h4>Amenities</h4>
+        <ul>
+          <li *ngFor="let f of hotel.facilities"><span class="fa fa-check text-success"></span> {{f}}</li>
+        </ul>
+      </div>
+
+      <div class="booking mt-4">
+        <h4>Book Your Stay</h4>
+        <form (submit)="bookHotel($event)">
+          <input type="date" [(ngModel)]="booking.checkin" name="checkin" required>
+          <input type="date" [(ngModel)]="booking.checkout" name="checkout" required>
+          <input type="number" [(ngModel)]="booking.guests" name="guests" min="1" required>
+          <button type="submit" class="btn btn-primary btn-block mt-2">Book Now</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h4>Description</h4>
+      <p>{{hotel.description}}</p>
+    </div>
+  </div>
+
+  <!-- Highlights -->
+<div class="row mb-4">
+  <div class="col-md-12">
+    <h4>Why Guests Love This Hotel</h4>
+    <div class="highlights d-flex flex-wrap gap-3">
+      <div class="highlight-item" *ngFor="let h of hotel.highlights">
+        <span class="fa fa-check-circle text-success"></span> {{h}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Room Types -->
+<div class="row mb-4" *ngIf="hotel.rooms?.length">
+  <div class="col-md-12">
+    <h4>Available Room Types</h4>
+  </div>
+
+  <div class="col-md-4 mb-3" *ngFor="let r of hotel.rooms">
+    <div class="card room-card">
+      <img [src]="r.image" class="card-img-top" alt="{{r.name}}">
+      <div class="card-body">
+        <h5>{{r.name}}</h5>
+        <p class="text-muted">{{r.description}}</p>
+        <p><b>${{r.price}}</b> / night - Sleeps: {{r.capacity}}</p>
+        <button class="btn btn-outline-success btn-block">Book Room</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Location + Nearby -->
+<div class="row mb-4">
+  <div class="col-md-8">
+    <h4>Where You'll Stay</h4>
+    <iframe
+      width="100%"
+      height="300"
+      style="border:0;border-radius:10px;"
+      loading="lazy"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <div class="col-md-4">
+    <h4>Popular Places Nearby</h4>
+    <ul class="nearby">
+      <li *ngFor="let p of hotel.nearby">
+        <span class="fa fa-map-marker text-danger"></span> {{p.name}} – {{p.distance}}
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="row mb-4" *ngIf="hotel.faq?.length">
+  <div class="col-md-12">
+    <h4>Frequently Asked Questions</h4>
+
+    <div class="accordion" id="faqAccordion">
+      <div class="card" *ngFor="let q of hotel.faq; let i=index">
+        <div class="card-header" (click)="toggleFaq(i)">
+          <h6>{{q.question}}</h6>
+        </div>
+        <div class="collapse" [class.show]="q.open">
+          <div class="card-body">
+            {{q.answer}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+  <!-- Reviews -->
+  <div class="row mb-4" *ngIf="hotel.reviews?.length">
+    <div class="col-md-12">
+      <h4>Guest Reviews</h4>
+      <div *ngFor="let review of hotel.reviews" class="review">
+        <strong>{{review.name}}</strong>
+        <span *ngFor="let star of [].constructor(review.stars)" class="fa fa-star text-warning"></span>
+        <p>{{review.comment}}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Hotels -->
+  <div class="row">
+    <div class="col-md-12">
+      <h4>Other Hotels You May Like</h4>
+      <div class="row">
+        <div class="col-md-4" *ngFor="let h of relatedHotels">
+          <div class="card related-card">
+            <img [src]="h.image" class="card-img-top" alt="{{h.name}}">
+            <div class="card-body">
+              <h5>{{h.name}}</h5>
+              <p class="text-muted">{{h.location}}</p>
+              <a [routerLink]="['/hotel', h.id]" class="btn btn-outline-primary btn-block">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+</section>

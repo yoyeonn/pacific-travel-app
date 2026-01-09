@@ -4,7 +4,7 @@ declare var $: any;
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink,RouterModule],
+  imports: [RouterModule],
   templateUrl: './home.html',
   styleUrls: ['./home.css'],
 })
