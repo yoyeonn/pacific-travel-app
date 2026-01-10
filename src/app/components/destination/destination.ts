@@ -1,15 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { DestinationService } from '../../services/destination.service';
+import { CommonModule } from '@angular/common';
 
 declare var $: any;
 
 @Component({
   selector: 'app-destination',
-  imports: [RouterModule],
+  imports: [RouterModule,CommonModule],
   templateUrl: './destination.html',
   styleUrl: './destination.css',
 })
-export class Destination {
+export class Destination implements OnInit{
 ngAfterViewInit(): void {
     this.contentWayPoint();
     this.initOwlCarousel();
@@ -63,4 +65,12 @@ ngAfterViewInit(): void {
       }
     });
   }
+
+  destinations: any[] = [];
+  
+    constructor(private destinationService: DestinationService) { }
+  
+    ngOnInit(): void {
+      this.destinations = this.destinationService.getDestinations();
+    }
 }

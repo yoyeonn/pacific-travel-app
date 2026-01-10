@@ -1,0 +1,180 @@
+<section class="ftco-section">
+  <div class="hotel-detail-page-container">
+    <div class="container mt-5" *ngIf="destination">
+
+<!-- Destination Header -->
+<div class="row mb-4 align-items-center">
+  <div class="col-md-8">
+    <h1 class="destination-name">{{ destination.name }}</h1>
+    <p class="text-muted mb-1">
+      <span class="fa fa-map-marker-alt"></span> {{ destination.location }}
+    </p>
+    <div class="stars">
+      <span *ngFor="let star of [].constructor(destination.stars)" class="fa fa-star text-warning"></span>
+      <span class="text-muted">({{ destination.reviews?.length || 0 }} reviews)</span>
+    </div>
+    <p *ngIf="destination.days"><strong>{{ destination.days }} Days Tour</strong></p>
+  </div>
+  <div class="col-md-4 text-md-right mt-3 mt-md-0">
+    <h3 class="price">${{ destination.price }} / person</h3>
+    <button class="btn btn-success btn-lg" (click)="bookTrip()">Book Trip</button>
+  </div>
+</div>
+
+
+
+
+
+      <!-- Carousel + Booking -->
+      <div class="row mb-5">
+        <!-- Left: Carousel -->
+        <div class="col-md-8">
+          <div class="main-image mb-3" style="position: relative;">
+            <img #carouselImg [src]="selectedImage" alt="{{ destination.name }}"
+              style="width:100%; height:400px; object-fit:cover; transition: opacity 0.5s;" />
+
+            <button (click)="prevImage()" class="carousel-arrow left">&#10094;</button>
+            <button (click)="nextImage()" class="carousel-arrow right">&#10095;</button>
+          </div>
+
+
+          <div class="thumbnail-images d-flex flex-wrap gap-2">
+            <div *ngFor="let img of destination.images; let i = index" class="thumbnail-wrapper"
+              (click)="selectImage(i)">
+              <img [src]="img" [class.selected]="selectedImageIndex === i">
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Quick Trip Selector -->
+        <div class="col-md-4">
+          <div class="booking mb-4">
+            <h4>Plan Your Trip</h4>
+
+            <div class="mb-3">
+              <label>Adults</label>
+              <input type="number" [(ngModel)]="selectedPackage.adults" name="adults" min="1" class="form-control">
+            </div>
+
+            <div class="mb-3">
+              <label>Children (2-11)</label>
+              <input type="number" [(ngModel)]="selectedPackage.children" name="children" min="0" class="form-control">
+            </div>
+
+            <button class="btn btn-primary btn-block" (click)="bookTrip()">Book Now</button>
+          </div>
+
+          <div class="amenities">
+            <h4>Included</h4>
+            <ul>
+              <li *ngFor="let f of destination.facilities">
+                <span class="fa fa-check text-success"></span> {{ f }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <h4>About This Destination</h4>
+          <p>{{ destination.apropos }}</p>
+        </div>
+      </div>
+
+      <!-- Detailed Description -->
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <h4>Description</h4>
+          <p>{{ destination.description }}</p>
+        </div>
+      </div>
+
+      <!-- Programme -->
+      <div class="row mb-4" *ngIf="destination.activities?.length">
+        <div class="col-md-12">
+          <h4>Itinerary</h4>
+        </div>
+
+        <div class="col-md-12">
+          <ul class="timeline">
+            <li *ngFor="let a of destination.activities">
+              <strong>Day {{ a.day }}: </strong> {{ a.activity }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+<div class="row mb-4" *ngIf="destination.reviews?.length">
+  <div class="col-md-12">
+    <h4>Guest Reviews ({{ destination.reviews.length }})</h4>
+    <div *ngFor="let review of destination.reviews" class="review mb-3">
+      <strong>{{ review.name }}</strong>
+      <span *ngFor="let s of [].constructor(review.stars)" class="fa fa-star text-warning"></span>
+      <p>{{ review.comment }}</p>
+    </div>
+  </div>
+</div>
+
+
+      <!-- Nearby -->
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <h4>Map</h4>
+          <iframe width="100%" height="300" style="border:0;border-radius:10px;" loading="lazy" allowfullscreen>
+          </iframe>
+        </div>
+
+        <div class="col-md-4">
+          <h4>Nearby Places</h4>
+          <ul class="nearby">
+            <li *ngFor="let p of destination.nearby">
+              <span class="fa fa-map-marker text-danger"></span> {{ p.name }} – {{ p.distance }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <div class="row mb-4" *ngIf="destination.faq?.length">
+        <div class="col-md-12">
+          <h4>Frequently Asked Questions</h4>
+          <div class="accordion">
+            <div class="card" *ngFor="let q of destination.faq; let i=index">
+              <div class="card-header" (click)="toggleFaq(i)">
+                <h6>{{ q.question }}</h6>
+              </div>
+              <div class="collapse" [class.show]="q.open">
+                <div class="card-body">{{ q.answer }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related -->
+      <div class="row">
+        <div class="col-md-12">
+          <h4>You May Also Like</h4>
+          <div class="row">
+            <div class="col-md-4" *ngFor="let d of relatedDestinations">
+              <div class="card related-card">
+                <img [src]="d.image" class="card-img-top" alt="{{ d.name }}">
+                <div class="card-body">
+                  <h5>{{ d.name }}</h5>
+                  <p class="text-muted">{{ d.location }}</p>
+                  <a [routerLink]="['/destination', d.id]" class="btn btn-outline-primary btn-block">
+                    Explore
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

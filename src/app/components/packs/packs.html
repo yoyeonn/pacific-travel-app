@@ -1,0 +1,66 @@
+<section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('images/bg_1.jpg');">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-center">
+      <div class="col-md-9 ftco-animate pb-5 text-center">
+         <p class="breadcrumbs">
+           <span class="mr-2">
+             <a routerLink="/">Home <i class="fa fa-chevron-right"></i></a>
+           </span> 
+           <span>Packs List <i class="fa fa-chevron-right"></i></span>
+         </p>
+         <h1 class="mb-0 bread">Packs List</h1>
+     </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row">
+      <!-- Loop through packs -->
+      <div *ngFor="let pack of packs" class="col-md-4 ftco-animate">
+        <div class="project-wrap">
+
+          <!-- Image -->
+          <a [routerLink]="['/packs', pack.id]" 
+             class="img d-block mb-2"
+             [style.background-image]="'url(' + pack.mainImage + ')'"
+             style="height: 220px; background-size: cover; background-position: center;">
+            <span class="price">${{ pack.price }}/person</span>
+          </a>
+
+          <!-- Text content -->
+          <div class="text p-4">
+            <span class="days">{{ pack.days }} Days</span>
+            <h3><a [routerLink]="['/packs', pack.id]">{{ pack.name }}</a></h3>
+            <p class="description text-muted">{{ pack.description }}</p>
+
+            <!-- Activities: first 3 only -->
+            <ul *ngIf="pack.activities?.length">
+              <li *ngFor="let act of pack.activities | slice:0:3">{{ act.activity }}</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="row mt-5">
+      <div class="col text-center">
+        <div class="block-27">
+          <ul>
+            <li><a href="#">&lt;</a></li>
+            <li class="active"><span>1</span></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#">&gt;</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

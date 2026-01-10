@@ -5,18 +5,24 @@ import { Destination } from './components/destination/destination';
 import { Hotel } from './components/hotel/hotel';
 import { Contact } from './components/contact/contact';
 import { HotelDetail } from './components/hotel-detail/hotel-detail';
-import { NgModule } from '@angular/core';
+import { RouteReuseStrategy, ActivatedRouteSnapshot } from '@angular/router';
+import { DestinationDetail } from './components/destination-detail/destination-detail';
+import { Packs } from './components/packs/packs';
+import { PacksDetail } from './components/packs-detail/packs-detail';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: Home },
     { path: 'about', component: About },
+    { path: 'destination/:id', component: DestinationDetail },
     { path: 'destination', component: Destination },
     { path: 'hotel/:id', component: HotelDetail },  // dynamic route FIRST
     { path: 'hotel', component: Hotel },           // static route SECOND
+    { path: 'packs/:id', component: PacksDetail },
+    { path: 'packs', component: Packs },
     { path: 'contact', component: Contact },
 ];
-import { RouteReuseStrategy, ActivatedRouteSnapshot } from '@angular/router';
+
 
 export class CustomReuseStrategy implements RouteReuseStrategy {
   shouldDetach(route: ActivatedRouteSnapshot): boolean { return false; }

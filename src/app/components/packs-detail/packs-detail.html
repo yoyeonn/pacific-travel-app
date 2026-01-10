@@ -1,0 +1,93 @@
+<section class="ftco-section" *ngIf="pack">
+  <div class="container mt-5">
+
+    <!-- Header -->
+    <div class="row mb-4 align-items-center">
+      <div class="col-md-8">
+        <h1>{{ pack.name }}</h1>
+        <p class="text-muted">{{ pack.days }} Days, Rating: {{ pack.rating }}</p>
+      </div>
+      <div class="col-md-4 text-md-right mt-3 mt-md-0">
+        <h3 class="price">${{ pack.price }} / person</h3>
+        <button class="btn btn-success btn-lg" (click)="bookPack()">Book Pack</button>
+      </div>
+    </div>
+
+    <!-- Carousel + Booking -->
+    <div class="row mb-5">
+      <div class="col-md-8">
+        <div class="main-image mb-3 position-relative">
+          <img [src]="selectedImage" alt="{{ pack.name }}" class="img-fluid">
+
+          <button (click)="prevImage()" class="carousel-arrow left">&#10094;</button>
+          <button (click)="nextImage()" class="carousel-arrow right">&#10095;</button>
+        </div>
+
+        <div class="thumbnail-images d-flex flex-wrap gap-2">
+          <div *ngFor="let img of pack.images; let i=index" class="thumbnail-wrapper"
+               (click)="selectImage(i)">
+            <img [src]="img" [class.selected]="selectedImageIndex === i" class="img-thumbnail">
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="booking mb-4">
+          <h4>Plan Your Pack</h4>
+
+          <div class="mb-3">
+            <label>Adults</label>
+            <input type="number" [(ngModel)]="selectedPackage.adults" name="adults" min="1" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label>Children (2-11)</label>
+            <input type="number" [(ngModel)]="selectedPackage.children" name="children" min="0" class="form-control">
+          </div>
+
+          <button class="btn btn-primary btn-block" (click)="bookPack()">Book Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <h4>Description</h4>
+        <p>{{ pack.description }}</p>
+      </div>
+    </div>
+
+    <!-- Itinerary -->
+    <div class="row mb-4" *ngIf="pack.activities?.length">
+      <div class="col-md-12">
+        <h4>Itinerary</h4>
+        <ul class="timeline">
+          <li *ngFor="let act of pack.activities">
+            <strong>Day {{ act.day }}: </strong>{{ act.activity }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Related Packs -->
+    <div class="row mb-4" *ngIf="relatedPacks.length">
+      <div class="col-md-12">
+        <h4>You May Also Like</h4>
+        <div class="row">
+          <div class="col-md-4" *ngFor="let r of relatedPacks">
+            <div class="card related-card">
+              <img [src]="r.mainImage" class="card-img-top" alt="{{ r.name }}">
+              <div class="card-body">
+                <h5>{{ r.name }}</h5>
+                <p class="text-muted">{{ r.days }} Days</p>
+                <a [routerLink]="['/pack', r.id]" class="btn btn-outline-primary btn-block">Explore</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
