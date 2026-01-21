@@ -1,180 +1,203 @@
 <section class="ftco-section">
-  <div class="hotel-detail-page-container">
-    <div class="container mt-5" *ngIf="destination">
+  <div class="destination-detail-container" *ngIf="destination">
 
-<!-- Destination Header -->
-<div class="row mb-4 align-items-center">
-  <div class="col-md-8">
-    <h1 class="destination-name">{{ destination.name }}</h1>
-    <p class="text-muted mb-1">
-      <span class="fa fa-map-marker-alt"></span> {{ destination.location }}
-    </p>
-    <div class="stars">
-      <span *ngFor="let star of [].constructor(destination.stars)" class="fa fa-star text-warning"></span>
-      <span class="text-muted">({{ destination.reviews?.length || 0 }} reviews)</span>
+    <!-- Header -->
+    <div class="row mb-4 align-items-center">
+      <div class="col-md-8">
+        <h1 class="destination-name">{{ destination.name }}</h1>
+        <span class="days">{{ destination.days || 1 }} Jours de Tour</span>
+        <p class="text-muted"><span class="fa fa-map-marker"></span> {{ destination.country }}</p>
+        <div class="stars mb-2">
+          <div class="stars-wrapper">
+            <!-- Gray background stars -->
+            <i class="fa fa-star" *ngFor="let star of [1,2,3,4,5]"></i>
+
+            <!-- Gold overlay according to rating -->
+            <div class="stars-inner" [style.width.%]="(averageRating / 5) * 100">
+              <i class="fa fa-star" *ngFor="let star of [1,2,3,4,5]"></i>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="col-md-4 text-md-right mt-3 mt-md-0">
+        <h3>{{ destination.price }} TND / personne</h3>
+        <button class="btn btn-success btn-lg" (click)="bookTrip()">Réserver maintenant</button>
+      </div>
     </div>
-    <p *ngIf="destination.days"><strong>{{ destination.days }} Days Tour</strong></p>
-  </div>
-  <div class="col-md-4 text-md-right mt-3 mt-md-0">
-    <h3 class="price">${{ destination.price }} / person</h3>
-    <button class="btn btn-success btn-lg" (click)="bookTrip()">Book Trip</button>
-  </div>
-</div>
 
+    <!-- Carousel -->
+    <div class="row mb-5">
+      <div class="col-md-8">
+        <div class="main-image mb-3" (mouseenter)="pauseAutoSlide()" (mouseleave)="resumeAutoSlide()">
+          <img *ngFor="let img of destination.images; let i=index" [src]="img" [class.active]="i === selectedImageIndex"
+            class="carousel-img">
 
-
-
-
-      <!-- Carousel + Booking -->
-      <div class="row mb-5">
-        <!-- Left: Carousel -->
-        <div class="col-md-8">
-          <div class="main-image mb-3" style="position: relative;">
-            <img #carouselImg [src]="selectedImage" alt="{{ destination.name }}"
-              style="width:100%; height:400px; object-fit:cover; transition: opacity 0.5s;" />
-
-            <button (click)="prevImage()" class="carousel-arrow left">&#10094;</button>
-            <button (click)="nextImage()" class="carousel-arrow right">&#10095;</button>
-          </div>
-
-
-          <div class="thumbnail-images d-flex flex-wrap gap-2">
-            <div *ngFor="let img of destination.images; let i = index" class="thumbnail-wrapper"
-              (click)="selectImage(i)">
-              <img [src]="img" [class.selected]="selectedImageIndex === i">
-            </div>
-          </div>
+          <button (click)="prevImage()" class="carousel-arrow left">&#10094;</button>
+          <button (click)="nextImage()" class="carousel-arrow right">&#10095;</button>
         </div>
 
-        <!-- Right: Quick Trip Selector -->
-        <div class="col-md-4">
-          <div class="booking mb-4">
-            <h4>Plan Your Trip</h4>
+        <div class="carousel-dots d-flex justify-content-center mt-2">
+          <span *ngFor="let img of destination.images; let i=index" [class.active]="i === selectedImageIndex"
+            (click)="selectImage(i)"></span>
+        </div>
 
-            <div class="mb-3">
-              <label>Adults</label>
-              <input type="number" [(ngModel)]="selectedPackage.adults" name="adults" min="1" class="form-control">
-            </div>
-
-            <div class="mb-3">
-              <label>Children (2-11)</label>
-              <input type="number" [(ngModel)]="selectedPackage.children" name="children" min="0" class="form-control">
-            </div>
-
-            <button class="btn btn-primary btn-block" (click)="bookTrip()">Book Now</button>
-          </div>
-
-          <div class="amenities">
-            <h4>Included</h4>
-            <ul>
-              <li *ngFor="let f of destination.facilities">
-                <span class="fa fa-check text-success"></span> {{ f }}
-              </li>
-            </ul>
+        <div class="thumbnail-images d-flex flex-wrap gap-2 mt-2">
+          <div *ngFor="let img of destination.images; let i=index" class="thumbnail-wrapper" (click)="selectImage(i)">
+            <img [src]="img" [class.selected]="i === selectedImageIndex" class="rounded">
           </div>
         </div>
       </div>
 
-      <!-- About -->
-      <div class="row mb-4">
-        <div class="col-md-12">
-          <h4>About This Destination</h4>
-          <p>{{ destination.apropos }}</p>
+      <!-- Booking Panel -->
+      <div class="col-md-4">
+        <div class="booking">
+          <h4>Planifiez Votre Voyage</h4>
+
+          <div class="mb-2">
+            <label>Date d'arrivée :</label>
+            <input type="date" [(ngModel)]="selectedPackage.checkIn" name="checkIn" [min]="today" (change)="onCheckInChange()" required>
+          </div>
+
+          <div class="mb-2">
+            <label>Date de départ :</label>
+            <input type="date" [(ngModel)]="selectedPackage.checkOut" name="checkOut" [min]="selectedPackage.checkIn || today" required>
+          </div>
+
+          <div class="mb-2">
+            <label>Adultes :</label>
+            <input type="number" [(ngModel)]="selectedPackage.adults" min="1">
+          </div>
+
+          <div class="mb-2">
+            <label>Enfants (2-11 ans) :</label>
+            <input type="number" [(ngModel)]="selectedPackage.children" min="0">
+          </div>
+
+          <div class="booking-summary mt-2">
+            <p>Total des voyageurs : {{ selectedPackage.adults + selectedPackage.children }}</p>
+            <p>Prix total : {{ (selectedPackage.adults + selectedPackage.children) * destination.price }} TND</p>
+          </div>
+
+          <button class="btn btn-primary btn-block mt-2" (click)="bookTrip()">Réserver maintenant</button>
+          <div *ngIf="bookingMessage"
+              class="booking-error"
+              [ngClass]="{ 'success': bookingMessageType==='success' }">
+            {{ bookingMessage }}
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Detailed Description -->
-      <div class="row mb-4">
-        <div class="col-md-12">
-          <h4>Description</h4>
-          <p>{{ destination.description }}</p>
-        </div>
-      </div>
+    <!-- About / Description -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <h4>À propos de cette destination</h4>
+        <p>{{ destination.about }}</p>
 
-      <!-- Programme -->
-      <div class="row mb-4" *ngIf="destination.activities?.length">
-        <div class="col-md-12">
-          <h4>Itinerary</h4>
-        </div>
+        <h4 class="mt-4">Description</h4>
+        <p>{{ destination.description }}</p>
 
-        <div class="col-md-12">
-          <ul class="timeline">
-            <li *ngFor="let a of destination.activities">
-              <strong>Day {{ a.day }}: </strong> {{ a.activity }}
+        <!-- Itinerary -->
+        <div *ngIf="destination.activities.length" class="mt-4">
+          <h4>Programme</h4>
+          <ul class="programme-list list-group list-group-flush">
+            <li class="list-group-item" *ngFor="let a of destination.activities">
+              <strong>Jour {{ a.day }} :</strong> {{ a.activity }}
             </li>
           </ul>
         </div>
       </div>
-
-      <!-- Reviews -->
-<div class="row mb-4" *ngIf="destination.reviews?.length">
-  <div class="col-md-12">
-    <h4>Guest Reviews ({{ destination.reviews.length }})</h4>
-    <div *ngFor="let review of destination.reviews" class="review mb-3">
-      <strong>{{ review.name }}</strong>
-      <span *ngFor="let s of [].constructor(review.stars)" class="fa fa-star text-warning"></span>
-      <p>{{ review.comment }}</p>
     </div>
-  </div>
-</div>
 
+    <!-- Reviews -->
+    <div class="row mb-4" *ngIf="destination.reviews.length">
+      <div class="col-md-12">
+        <h4>Avis des voyageurs ({{ destination.reviews.length }})</h4>
+        <div *ngFor="let review of destination.reviews" class="review mb-3">
+          <strong>{{ review.name }}</strong>
 
-      <!-- Nearby -->
-      <div class="row mb-4">
-        <div class="col-md-8">
-          <h4>Map</h4>
-          <iframe width="100%" height="300" style="border:0;border-radius:10px;" loading="lazy" allowfullscreen>
-          </iframe>
-        </div>
+          <div class="stars-wrapper" style="position: relative; display: inline-block; font-size: 14px; color: #ccc;">
+            <i class="fa fa-star" *ngFor="let star of [1,2,3,4,5]"></i>
 
-        <div class="col-md-4">
-          <h4>Nearby Places</h4>
-          <ul class="nearby">
-            <li *ngFor="let p of destination.nearby">
-              <span class="fa fa-map-marker text-danger"></span> {{ p.name }} – {{ p.distance }}
-            </li>
-          </ul>
+            <div class="stars-inner" [style.width.%]="(review.stars / 5) * 100">
+              <i class="fa fa-star" *ngFor="let star of [1,2,3,4,5]"></i>
+            </div>
+          </div>
+
+          <p>{{ review.comment }}</p>
         </div>
       </div>
+    </div>
 
-      <!-- FAQ -->
-      <div class="row mb-4" *ngIf="destination.faq?.length">
-        <div class="col-md-12">
-          <h4>Frequently Asked Questions</h4>
-          <div class="accordion">
-            <div class="card" *ngFor="let q of destination.faq; let i=index">
-              <div class="card-header" (click)="toggleFaq(i)">
-                <h6>{{ q.question }}</h6>
-              </div>
-              <div class="collapse" [class.show]="q.open">
-                <div class="card-body">{{ q.answer }}</div>
-              </div>
+    <!-- Map + Nearby -->
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <h4>Carte</h4>
+        <iframe width="100%" height="300" style="border:0;border-radius:10px;" loading="lazy" allowfullscreen></iframe>
+      </div>
+      <div class="col-md-4">
+        <h4>À proximité</h4>
+        <ul class="nearby">
+          <li *ngFor="let n of destination.nearby">
+            <span class="fa fa-map-marker text-danger"></span> {{ n.name }} - {{ n.distance }} KM
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="row mb-4" *ngIf="destination.faq.length">
+      <div class="col-md-12">
+        <h4>Questions Fréquemment Posées</h4>
+        <div class="accordion">
+          <div class="card" *ngFor="let q of destination.faq; let i=index">
+            <div class="card-header" (click)="toggleFaq(i)">
+              <h6>{{ q.question }}</h6>
+              <span class="toggle-icon">{{ q.open ? '-' : '+' }}</span>
+            </div>
+            <div class="collapse" [class.show]="q.open">
+              <div class="card-body">{{ q.answer }}</div>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Related -->
-      <div class="row">
-        <div class="col-md-12">
-          <h4>You May Also Like</h4>
-          <div class="row">
-            <div class="col-md-4" *ngFor="let d of relatedDestinations">
-              <div class="card related-card">
-                <img [src]="d.image" class="card-img-top" alt="{{ d.name }}">
-                <div class="card-body">
-                  <h5>{{ d.name }}</h5>
-                  <p class="text-muted">{{ d.location }}</p>
-                  <a [routerLink]="['/destination', d.id]" class="btn btn-outline-primary btn-block">
-                    Explore
-                  </a>
+    <!-- Related Destinations -->
+    <div class="row mb-4" *ngIf="relatedDestinations.length">
+      <div class="col-md-12">
+        <h4>Vous pourriez aussi aimer</h4>
+        <div class="row">
+          <div class="col-md-4 mb-4" *ngFor="let d of relatedDestinations">
+            <div class="destination-card d-flex flex-column">
+              <div class="destination-img-wrapper">
+                <div class="destination-img"
+                  [ngStyle]="{'background-image': 'url(' + (d.images[0] || 'default.jpg') + ')'}">
+                  <span class="price">{{ d.price }} TND / personne</span>
                 </div>
               </div>
+              <div class="destination-content d-flex flex-column flex-grow-1">
+                <h5 class="destination-name">{{ d.name }}</h5>
+                <p class="description text-muted">{{ d.title }}</p>
+                <p class="text-muted mb-1"><span class="fa fa-map-marker"></span> {{ d.name }} - {{ d.country }}</p>
+
+                <div class="stars mb-2">
+                  <div class="stars-wrapper" style="position: relative; display: inline-block; font-size: 14px; color: #ccc;">
+                    <i class="fa fa-star" *ngFor="let star of [1,2,3,4,5]"></i>
+                    <div class="stars-inner" [style.width.%]="getAverageRating(d) / 5 * 100">
+                      <i class="fa fa-star" *ngFor="let star of [1,2,3,4,5]"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <a [routerLink]="['/destination', d.id]" class="btn btn-success mt-auto">Voir les détails</a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
+
   </div>
 </section>

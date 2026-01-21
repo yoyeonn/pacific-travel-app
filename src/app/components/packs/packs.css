@@ -1,0 +1,59 @@
+/* Fade-in animation on scroll */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply to cards with ftco-animate */
+.ftco-animate {
+  opacity: 0;
+  animation-fill-mode: forwards;
+  animation-duration: 0.8s;
+  animation-timing-function: ease-out;
+}
+
+.ftco-animate.visible {
+  opacity: 1;
+  animation-name: fadeInUp;
+}
+
+/* Hover lift & shadow */
+.project-wrap {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
+  flex: 1 1 auto;
+}
+
+.project-wrap:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+
+.project-wrap .text ul li {
+  transition: color 0.2s;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.project-wrap .text ul li:hover {
+  color: #007bff;
+}
+.project-wrap .img {
+  transition: transform 0.5s ease;
+}
+
+.project-wrap:hover .img {
+  transform: scale(1.05);
+}

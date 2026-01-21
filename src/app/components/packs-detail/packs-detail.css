@@ -1,104 +1,312 @@
-.destination-detail-container {
-  background: #fff;
-  border-radius: 15px;
-  padding: 24px;
-  box-shadow: 0 8px 25px rgba(0,0,0,.08);
-  margin: 20px auto;
-  max-width: 1200px;
-  transition: .3s ease;
-}
-.destination-detail-container:hover {
-  box-shadow: 0 12px 30px rgba(0,0,0,.12);
-}
-
-.destination-name {
-  font-weight: 700;
-  font-size: 32px;
-}
-
-.stars .fa-star { margin-right: 1px; }
-
+/* ---------- Carousel ---------- */
 .main-image {
   position: relative;
-  padding-top: 56%;
-  border-radius: 12px;
+  width: 100%;
+  padding-top: 56.25%;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0,0,0,.2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
-.main-image img {
-  position: absolute; top:0; left:0; width:100%; height:100%;
-  object-fit: cover;
-  transition: transform .5s;
-}
-
-.carousel-arrow {
+.carousel-img {
   position: absolute;
-  top:50%; transform: translateY(-50%);
-  background: rgba(0,0,0,.4);
-  color:#fff;
-  height:40px; width:40px;
-  border-radius:50%;
-  font-size:20px;
-  border:none;
-  cursor:pointer;
-  transition:.3s;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.5s ease;
+  border-radius: 10px;
+  z-index: 0;
 }
-.carousel-arrow.left { left:10px; }
-.carousel-arrow.right { right:10px; }
-.carousel-arrow:hover {
-  background:#28a745;
-  transform: translateY(-50%) scale(1.1);
+.carousel-img.active { opacity: 1; z-index: 0;}
+.carousel-arrow {
+  position: absolute; top: 50%;
+  transform: translateY(-50%);
+  width: 40px; height: 40px;
+  background: rgba(0,0,0,0.4);
+  color: #fff; border-radius: 50%;
+  border: none; cursor: pointer;
+  display: flex; justify-content: center; align-items: center;
+  font-size: 24px; transition: all 0.3s ease;
 }
-
+.carousel-arrow.left { left: 10px; }
+.carousel-arrow.right { right: 10px; }
+.carousel-arrow:hover { background: #28a745; transform: translateY(-50%) scale(1.1);}
+.carousel-dots span {
+  width: 10px; height: 10px;
+  background: #ccc; border-radius: 50%;
+  margin: 0 4px; display: inline-block;
+  cursor: pointer; transition: all 0.3s;
+}
+.carousel-dots span.active { background: #28a745; transform: scale(1.2); }
 .thumbnail-images {
-  display:flex;
-  gap:10px;
-  margin-top:10px;
-}
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;}
 .thumbnail-wrapper img {
-  width:100px; height:70px;
-  object-fit:cover;
-  border-radius:6px;
-  border:2px solid transparent;
-  cursor:pointer;
-  transition:.3s;
+  width: 100px; height: 70px; object-fit: cover;
+  border-radius: 5px; border: 2px solid transparent;
+  cursor: pointer; transition: 0.3s;
 }
-.thumbnail-wrapper img.selected {
-  border-color:#007bff;
-  transform:scale(1.05);
-}
+.thumbnail-wrapper img.selected { border-color: #28a745; transform: scale(1.05); }
 
-.highlights-box, .tips {
-  padding:15px;
-  background:#f8f9fa;
-  border-radius:10px;
+/* ---------- General ---------- */
+.pack-detail-page-container {
+  border: 2px solid #ddd; border-radius: 15px;
+  padding: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  background: #fff; margin: 20px auto;
+  max-width: 1200px; transition: all 0.3s ease;
 }
-.highlights-box li, .tips li { margin-bottom:5px; }
+.pack-detail-page-container:hover { box-shadow: 0 12px 35px rgba(0,0,0,0.15); }
+h4 { position: relative; padding-bottom: 5px; }
+h4::after { content: ''; position: absolute; width: 40px; height: 3px; background: #28a745; bottom:0; left:0; border-radius:2px; }
+.pack-name { font-weight:700; margin-bottom:5px; font-size:2rem; }
+.stars .fa-star { margin-right:2px; font-size:0.85rem; }
 
-.programme {
-  display:flex;
-  flex-wrap:wrap;
-  gap:15px;
+/* ---------- Highlights ---------- */
+.highlights { background: #f7f9fb; padding: 20px; border-radius: 12px; display:flex; flex-wrap:wrap; gap:12px; }
+.highlight-item {
+  background: #fff; padding:10px 14px; border-radius:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.08); font-size:14px; font-weight:500;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.prog-item {
-  flex:1 1 300px;
-  padding:15px;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,.08);
-  background:#fff;
-}
+.highlight-item:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
 
-.review { border-bottom:1px solid #eee; padding:10px 0; }
+/* ---------- Room Cards ---------- */
+.room-card { display:flex; flex-direction:column; height:100%; border-radius:12px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,.1); transition:transform 0.3s;}
+.room-card:hover img { transform: scale(1.05); transition:0.5s; }
+.room-card .card-body { display:flex; flex-direction:column; flex-grow:1; }
 
-.nearby { list-style:none; padding:0; }
+/* ---------- Booking ---------- */
+.booking { background:#f7f9fb; position:sticky; top:20px; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,0.09); padding:15px;}
+.booking input { display:block; width:100%; margin-bottom:10px; padding:7px 10px; border-radius:5px; border:1px solid #ccc; }
+.booking input:focus { border-color:#28a745; box-shadow:0 0 5px rgba(40,167,69,0.3); }
+
+/* ---------- Nearby ---------- */
+.nearby { list-style:none; padding-left:0; }
 .nearby li { padding:6px 0; }
 
-.related-card {
-  border-radius:12px;
-  box-shadow:0 4px 15px rgba(0,0,0,.1);
-  transition:.3s;
+/* ---------- FAQ ---------- */
+.card-header { background:#fff; cursor:pointer; padding:12px; border-bottom:1px solid #eee; }
+.card-header:hover { background:#f5f5f5; }
+.card-body { background:#fff; }
+.toggle-icon { float:right; font-weight:bold; }
+
+/* ---------- Related packs ---------- */
+.pack-card { display:flex; flex-direction:column; border-radius:12px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,0.1); transition:transform 0.3s, box-shadow 0.3s; height:100%; }
+.pack-card:hover { transform:translateY(-5px); box-shadow:0 8px 25px rgba(0,0,0,0.2);}
+.pack-img-wrapper { overflow:hidden; border-radius:12px 12px 0 0; position:relative; }
+.pack-img { position:relative; width:100%; padding-top:56.25%; background-size:cover; background-position:center; transition:transform 0.5s; }
+.pack-card:hover .pack-img { transform:scale(1.05); }
+.pack-img .price { position:absolute; bottom:10px; right:10px; background:#28a745; color:#fff; padding:5px 10px; border-radius:5px; font-weight:600; font-size:13px; }
+.pack-content { display:flex; flex-direction:column; padding:15px; flex-grow:1; }
+.pack-content .btn { margin-top:auto; font-weight:600; text-align:center; }
+.pack-highlights li { font-size:12px; display:flex; align-items:center; margin-right:5px; }
+.pack-highlights li i { margin-right:4px; }
+.booking-room-trigger {
+  background: #007bff;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 15px;
 }
-.related-card:hover {
-  transform:translateY(-5px);
-  box-shadow:0 8px 25px rgba(0,0,0,.15);
+
+/* Modal container */
+.room-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99999 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden; /* prevent horizontal scroll */
+  overflow-y: auto;
+  padding-top: 80px;
+}
+
+/* Background blur */
+.modal-backdrop {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99998 !important;
+}
+
+/* Modal box */
+.modal-content {
+  position: relative;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  width: 90%;
+  max-width: 450px;
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 0 8px 25px rgba(0,0,0,.25);
+  z-index: 100000 !important;
+  animation: fadeIn .25s ease-out;
+  margin-top: 60px;
+  transform: translateY(15px);
+  opacity: 0;
+  transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+}
+
+.modal-content.open {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content button {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.room-selection {
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.room-selection:last-child {
+  border-bottom: none;
+}
+
+/* Inputs */
+.input-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.input-row input {
+  width: 80px;
+  text-align: center;
+}
+
+.remove-room {
+  display: inline-block;
+  margin-top: 5px;
+  background: #e74c3c;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.modal-actions button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-actions .confirm {
+  background: #28a745;
+  color: white;
+}
+
+/* Smooth opening */
+@keyframes fadeIn {
+  from { transform: translateY(15px); opacity:0; }
+  to { transform: translateY(0); opacity:1; }
+}
+
+/* ---------- Accordion Style (FAQ + Hotel Info) ---------- */
+.accordion .card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.accordion .card-header {
+  background-color: #f8f9fa;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between; /* ensures title left, + / - right */
+  align-items: center;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.accordion .card-header:hover {
+  background-color: #e9ecef;
+}
+
+.accordion .card-header h6 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.accordion .card-header .toggle-icon {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-left: auto; /* push it to the right */
+}
+
+.accordion .collapse {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #ddd;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+}
+
+.accordion .collapse.show {
+  max-height: 1000px; /* large enough for content */
+}
+
+.accordion ul {
+  padding-left: 1.25rem;
+  margin: 0;
+}
+
+.accordion ul li {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.accordion .collapse h6 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Optional: bullets style */
+.accordion ul li::marker {
+  color: #28a745; /* green bullets */
+  font-weight: bold;
+}
+
+/* Title for accordion sections */
+.accordion > h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
 }

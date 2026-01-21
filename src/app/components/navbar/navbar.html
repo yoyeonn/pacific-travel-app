@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
   <div class="container">
     
-    <a class="navbar-brand" routerLink="/">Pacific<span>Travel Agency</span></a>
+    <a class="navbar-brand" routerLink="/">Pacific<span>Agence de Voyage</span></a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav"
       aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
@@ -10,12 +10,33 @@
 
     <div class="collapse navbar-collapse" id="ftco-nav">
       <ul class="navbar-nav ml-auto">
-        <li class="nav-item"><a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a></li>
-        <li class="nav-item"><a routerLink="/about" class="nav-link" routerLinkActive="active">About</a></li>
-        <li class="nav-item"><a routerLink="/destination" class="nav-link" routerLinkActive="active">Destination</a></li>
-        <li class="nav-item"><a routerLink="/hotel" class="nav-link" routerLinkActive="active">Hotel</a></li>
-        <li class="nav-item"><a routerLink="/packs" class="nav-link" routerLinkActive="active">Packs</a></li>
+        <li class="nav-item"><a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Accueil</a></li>
+        <li class="nav-item"><a routerLink="/about" class="nav-link" routerLinkActive="active">À propos</a></li>
+        <li class="nav-item"><a routerLink="/destination" class="nav-link" routerLinkActive="active">Destinations</a></li>
+        <li class="nav-item"><a routerLink="/hotel" class="nav-link" routerLinkActive="active">Hôtels</a></li>
+        <li class="nav-item"><a routerLink="/packs" class="nav-link" routerLinkActive="active">Forfaits</a></li>
         <li class="nav-item"><a routerLink="/contact" class="nav-link" routerLinkActive="active">Contact</a></li>
+        <!-- Login link (only if NOT logged in) -->
+<li class="nav-item" *ngIf="!isLoggedIn">
+  <a routerLink="/login" class="nav-link" routerLinkActive="active">Connexion</a>
+</li>
+
+<!-- Profile (only if logged in) -->
+<li class="nav-item dropdown" *ngIf="isLoggedIn">
+  <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown"
+     role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class="fa fa-user-circle mr-2" aria-hidden="true"></i>
+<span>{{ userName }}</span>
+
+  </a>
+
+  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+    <a class="dropdown-item" routerLink="/profil">Mon profil</a>
+    <div class="dropdown-divider"></div>
+    <button class="dropdown-item" type="button" (click)="logout()">Déconnexion</button>
+  </div>
+</li>
+
       </ul>
     </div>
 

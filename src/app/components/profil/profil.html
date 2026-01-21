@@ -1,0 +1,122 @@
+<div class="container mt-5">
+  <h2>Mon profil</h2>
+
+  <div *ngIf="user; else noUser" class="mt-3">
+
+    <!-- User info -->
+    <div class="card p-3 mb-4">
+      <p><strong>Nom:</strong> {{ user.name }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
+
+    <!-- Change password -->
+    <form [formGroup]="pwdForm" (ngSubmit)="onChangePassword()" novalidate>
+  <!-- hidden username to reduce browser “select login” prompt -->
+  <input
+    type="text"
+    [value]="user?.email || ''"
+    autocomplete="username"
+    readonly
+    style="position:absolute; left:-9999px; width:1px; height:1px; opacity:0;"
+    tabindex="-1"
+    aria-hidden="true"
+  />
+
+  <div class="card p-3 mb-4">
+    <h5>Changer le mot de passe</h5>
+
+    <div class="row g-2">
+      <div class="col-md-4">
+        <label class="form-label">Actuel</label>
+        <input
+          type="password"
+          class="form-control"
+          formControlName="currentPassword"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Nouveau</label>
+        <input
+          type="password"
+          class="form-control"
+          formControlName="newPassword"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Confirmer</label>
+        <input
+          type="password"
+          class="form-control"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+        />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">
+      Mettre à jour
+    </button>
+
+    <div *ngIf="pwdMsg" class="mt-2"
+         [class.text-success]="pwdMsgType==='success'"
+         [class.text-danger]="pwdMsgType==='error'">
+      {{ pwdMsg }}
+    </div>
+  </div>
+</form>
+
+
+    <!-- Reservations -->
+    <div class="card p-3">
+      <h5>Historique des réservations / factures</h5>
+
+      <div *ngIf="loading">Chargement...</div>
+      <div *ngIf="error" class="text-danger">{{ error }}</div>
+
+      <div class="table-responsive" *ngIf="!loading && !error">
+        <table class="table table-striped align-middle">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Hôtel</th>
+              <th>Check-in/out</th>
+              <th>Montant</th>
+              <th>Formule</th>
+              <th>Chambres</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let r of reservations">
+              <td>{{ r.createdAt | date:'short' }}</td>
+              <td>{{ r.hotelName }}</td>
+              <td>{{ r.checkIn }} → {{ r.checkOut }}</td>
+              <td>{{ r.amount | number:'1.2-2' }} TND</td>
+              <td>{{ mealPlanLabel(r.mealPlan) }}</td>
+              <td>{{ r.roomNames }}</td>
+              <td>
+                <button class="btn btn-outline-success btn-sm" (click)="onDownload(r)">
+                  Télécharger facture
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="reservations.length === 0">
+              <td colspan="7" class="text-center">Aucune réservation.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <ng-template #noUser>
+    <p>Vous n'êtes pas connecté.</p>
+  </ng-template>
+</div>

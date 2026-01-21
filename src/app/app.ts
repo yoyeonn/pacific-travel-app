@@ -1,17 +1,27 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Home } from './components/home/home';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
+import { AuthService } from './services/auth.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
-  standalone: true,           // ✅ mark as standalone
-  imports: [RouterOutlet,Navbar,Footer], // ✅ allowed now
+  standalone: true,
+  imports: [RouterOutlet,Navbar,Footer,HttpClientModule],
   templateUrl: './app.html',
-  styleUrls: ['./app.css']     // ✅ plural array
+  styleUrls: ['./app.css']
 })
-export class App {
-  protected readonly title = signal('travel');
+export class App implements OnInit{
+  constructor(private auth: AuthService) {}
+
+  ngOnInit(): void {
+  if (this.auth.getToken()) {
+    this.auth.getMe().subscribe({
+      next: (user) => this.auth.setSession(this.auth.getToken()!, user),
+      error: () => this.auth.logout()
+    });
+  }
+}
 }
 

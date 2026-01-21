@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { Pack, PacksService } from '../../services/packs.service';
+import { PacksService } from '../../services/packs.service';
+import { Pack } from '../../models/pack';
 declare var $: any;
 
 @Component({
@@ -68,9 +69,36 @@ ngAfterViewInit(): void {
 
   packs: Pack[] = [];
 
-  constructor(private packsService: PacksService) { }
+  constructor(private packsService: PacksService , private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.packs = this.packsService.getPacks();
+    this.loadPacks();
   }
+
+  async loadPacks() {
+  try {
+    this.packs = await this.packsService.getPacks();
+    setTimeout(() => {
+      this.contentWayPoint();
+      this.initOwlCarousel();
+    });
+    this.cd.detectChanges();
+  } catch (err) {
+    console.error('Failed to load packs', err);
+  }
+}
+
+observeCards() {
+  const cards = document.querySelectorAll('.ftco-animate');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  cards.forEach(card => observer.observe(card));
+}
 }

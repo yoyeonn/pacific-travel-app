@@ -2,13 +2,17 @@ import { RouterModule, Routes } from '@angular/router';
 import { Home } from './components/home/home';
 import { About } from './components/about/about';
 import { Destination } from './components/destination/destination';
-import { Hotel } from './components/hotel/hotel';
+import { HotelList } from './components/hotel/hotelList';
 import { Contact } from './components/contact/contact';
 import { HotelDetail } from './components/hotel-detail/hotel-detail';
 import { RouteReuseStrategy, ActivatedRouteSnapshot } from '@angular/router';
 import { DestinationDetail } from './components/destination-detail/destination-detail';
 import { Packs } from './components/packs/packs';
 import { PacksDetail } from './components/packs-detail/packs-detail';
+import { Signup } from './components/signup/signup';
+import { Login } from './components/login/login';
+import { Profil } from './components/profil/profil';
+import { AuthGuard } from './services/auth-guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -16,11 +20,14 @@ export const routes: Routes = [
     { path: 'about', component: About },
     { path: 'destination/:id', component: DestinationDetail },
     { path: 'destination', component: Destination },
-    { path: 'hotel/:id', component: HotelDetail },  // dynamic route FIRST
-    { path: 'hotel', component: Hotel },           // static route SECOND
+    { path: 'hotel/:id', component: HotelDetail },
+    { path: 'hotel', component: HotelList },
     { path: 'packs/:id', component: PacksDetail },
     { path: 'packs', component: Packs },
     { path: 'contact', component: Contact },
+    { path: 'signup', component: Signup },
+    { path: 'login', component: Login },
+    { path: 'profil', component: Profil, canActivate: [AuthGuard] },
 ];
 
 
@@ -30,7 +37,6 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
   shouldAttach(route: ActivatedRouteSnapshot): boolean { return false; }
   retrieve(route: ActivatedRouteSnapshot): any { return null; }
   shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
-    // Only reuse the route if the URL is exactly the same
     return future.routeConfig === curr.routeConfig && JSON.stringify(future.params) === JSON.stringify(curr.params);
   }
 }

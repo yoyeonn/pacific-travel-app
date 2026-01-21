@@ -1,0 +1,117 @@
+.project-wrap.hotel {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
+  flex: 1 1 auto; /* equal height cards */
+}
+
+.project-wrap.hotel:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.project-wrap.hotel .img {
+  height: 250px;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.5s ease;
+}
+
+.project-wrap.hotel:hover .img {
+  transform: scale(1.05);
+}
+
+.project-wrap .text ul li {
+  transition: color 0.2s;
+}
+
+.project-wrap .text ul li:hover {
+  color: #007bff;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+}
+
+.ftco-animate {
+  opacity: 0;
+  animation-fill-mode: forwards;
+  animation-duration: 0.8s;
+  animation-timing-function: ease-out;
+}
+
+.ftco-animate.visible {
+  opacity: 1;
+  animation-name: fadeInUp;
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Make sure dropdown can escape the container */
+.search-wrap-1,
+.search-property-1,
+.row.no-gutters,
+.col-lg.d-flex,
+.form-group,
+.form-field {
+  overflow: visible !important;
+}
+
+.search-wrap-1 {
+  position: relative !important;
+  z-index: 999998 !important;
+}
+
+.form-field {
+  position: relative !important;
+  z-index: 999999 !important;
+}
+
+.suggestions-list {
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  left: 0 !important;
+  right: 0 !important;
+
+  max-height: 220px !important;
+  overflow-y: auto !important;
+
+  background: #fff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 6px !important;
+
+  margin-top: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+
+  z-index: 9999999 !important;
+  pointer-events: auto !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.suggestions-list li {
+  display: block !important;
+  padding: 10px 12px !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.suggestions-list li:hover {
+  background: #28a745 !important;
+  color: #fff !important;
+}
+
+.form-field .icon {
+  pointer-events: none !important;
+}
+
+
+

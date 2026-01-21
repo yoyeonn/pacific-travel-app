@@ -1,20 +1,20 @@
 <section class="ftco-section">
-  <div class="hotel-detail-page-container">
-    <div class="container mt-5" *ngIf="hotel">
+  <div class="hotel-detail-page-container" *ngIf="hotel">
+    <div class="container mt-5">
 
       <!-- Hotel Header -->
       <div class="row mb-4 align-items-center">
         <div class="col-md-8">
           <h1 class="hotel-name">{{hotel.name}}</h1>
-          <p class="text-muted"><span class="fa fa-map-marker-alt"></span> {{hotel.location}}</p>
-          <div class="stars">
-            <span *ngFor="let star of [].constructor(hotel.stars)" class="fa fa-star text-warning"></span>
-            <span class="text-muted">({{hotel.reviews?.length || 0}} reviews)</span>
+          <span class="days">{{ hotel.days || 1 }} Jours de voyage</span>
+          <p class="text-muted"><span class="fa fa-map-marker"></span> {{hotel.city}} - {{hotel.country}}</p>
+          <div class="stars mb-2">
+            <span *ngFor="let star of getStars(hotel.stars || 0)" class="fa fa-star text-warning"></span>
           </div>
         </div>
         <div class="col-md-4 text-md-right mt-3 mt-md-0">
-          <h3 class="price">${{hotel.price}}/night</h3>
-          <button class="btn btn-success btn-lg">Book Now</button>
+          <h3 class="price">{{ hotel.rooms?.[0]?.price || 0 }} TND / nuit</h3>
+          <button class="btn btn-success btn-lg" (click)="bookHotel($event)">Réserver maintenant</button>
         </div>
       </div>
 
@@ -22,94 +22,180 @@
       <div class="row mb-5">
         <!-- Left: Carousel -->
         <div class="col-md-8">
-          <div class="main-image mb-3">
-            <img [src]="selectedImage" alt="{{hotel.name}}">
+          <div class="main-image mb-3" (mouseenter)="pauseAutoSlide()" (mouseleave)="resumeAutoSlide()">
+            <img *ngFor="let img of hotel.images; let i = index" [src]="'images/' + img"
+              [class.active]="i === selectedImageIndex" class="carousel-img">
 
             <button (click)="prevImage()" class="carousel-arrow left">&#10094;</button>
             <button (click)="nextImage()" class="carousel-arrow right">&#10095;</button>
           </div>
 
-          <div class="thumbnail-images d-flex flex-wrap gap-2">
+          <div class="carousel-dots d-flex justify-content-center mt-2">
+            <span *ngFor="let img of hotel.images; let i = index" [class.active]="i === selectedImageIndex"
+              (click)="selectImage(i)"></span>
+          </div>
+
+          <div class="thumbnail-images d-flex flex-wrap gap-2 mt-2">
             <div *ngFor="let img of hotel.images; let i = index" class="thumbnail-wrapper" (click)="selectImage(i)">
-              <img [src]="img" [class.selected]="selectedImageIndex === i">
+              <img [src]="'images/' + img" [class.selected]="selectedImageIndex === i" class="rounded">
             </div>
           </div>
         </div>
 
         <!-- Right: Booking & Amenities -->
         <div class="col-md-4">
-          <div class="amenities">
-            <h4>Amenities</h4>
-            <ul>
-              <li *ngFor="let f of hotel.facilities"><span class="fa fa-check text-success"></span> {{f}}</li>
-            </ul>
-          </div>
 
-          <div class="booking mt-4">
-            <h4>Book Your Stay</h4>
-            <div class="mb-2">
-              <label>Check-in:</label>
-              <input type="date" [(ngModel)]="booking.checkin" name="checkin" required>
-            </div>
-            <div class="mb-2">
-              <label>Check-out:</label>
-              <input type="date" [(ngModel)]="booking.checkout" name="checkout" required>
-            </div>
+          <div class="booking">
+            <h4>Réservez votre séjour</h4>
             <form (submit)="bookHotel($event)">
-              <div *ngFor="let br of bookingRooms; let i = index" class="room-booking mb-3 p-2 border rounded">
-                <h5>{{br.room.name}}</h5>
-                <p class="text-muted">{{br.room.description}}</p>
+              <div class="mb-2">
+                <label>Arrivée :</label>
+                <input type="date" [(ngModel)]="booking.checkin" name="checkin" [min]="today" (change)="onCheckinChange()" (ngModelChange)="bookingError = ''" required>
+              </div>
+              <div class="mb-2">
+                <label>Départ :</label>
+                <input type="date" [(ngModel)]="booking.checkout" name="checkout" [min]="booking.checkin || today" (ngModelChange)="bookingError = ''" required>
+              </div>
+              <!-- Formule (hébergement / repas) -->
+<div class="mb-2">
+  <label>Formule</label>
 
-                <div class="d-flex gap-2 align-items-center">
-                  <label>Adults:</label>
-                  <input type="number" [(ngModel)]="br.adults" [name]="'adults'+i" [min]="1" [max]="br.room.capacity"
-                    required>
-                </div>
+  <select
+    class="form-control"
+    [(ngModel)]="booking.mealPlan"
+    name="mealPlan"
+    required
+  >
+    <option [ngValue]="'ROOM_ONLY'">Hébergement seul (chambre)</option>
+    <option [ngValue]="'BB'">Petit-déjeuner inclus</option>
+    <option [ngValue]="'HB'">Demi-pension (petit-déjeuner + 1 repas)</option>
+    <option [ngValue]="'FB'">Pension complète (petit-déjeuner + déjeuner + dîner)</option>
+    <option [ngValue]="'AI'">Tout compris (repas + boissons locales + snacks)</option>
+    <option [ngValue]="'UAI'">Ultra tout compris (extras inclus)</option>
+  </select>
 
-                <div class="d-flex gap-2 align-items-center">
-                  <label>Children<br>(2-11 old):</label>
-                  <input type="number" [(ngModel)]="br.children" [name]="'children'+i" [min]="0"
-                    [max]="br.room.capacity - br.adults">
-                </div>
+  <!-- Optional: show details + price impact -->
+  <small class="text-muted d-block mt-1">
+    {{ mealPlanLabel(booking.mealPlan) }}
+    <span *ngIf="mealPlanExtra(booking.mealPlan) > 0">
+      • +{{ mealPlanExtra(booking.mealPlan) }} TND / personne / nuit
+    </span>
+  </small>
+</div>
+<div class="mt-2 text-muted" *ngIf="nights > 0">
+  <strong>Supplément formule :</strong>
+  {{ mealPlanTotal }} TND  
+  <small>
+    ({{ totalPeople }} personne(s) × {{ nights }} nuit(s))
+  </small>
+</div>
 
-                <p><b>${{br.room.price}}</b> / night - Sleeps: {{br.room.capacity}}</p>
+
+
+              <!-- Trigger Modal -->
+              <div class="booking-room-trigger" (click)="openRoomModal()">
+                Chambres et occupation
               </div>
 
+              <!-- Modal -->
+              <div class="room-modal" *ngIf="showRoomModal">
+                <div class="modal-backdrop" (click)="closeRoomModal()"></div>
+                <div class="modal-content" [ngClass]="{'open': showRoomModal}">
+                  <h4>Chambres et Occupation</h4>
 
+                  <!-- Selected Booking Rooms -->
+                  <div *ngFor="let br of bookingRooms; let i = index" class="room-selection">
+                    <h5>{{ br.room.name }}</h5>
+                    <p class="text-muted">{{ br.room.description }}</p>
 
-              <button type="submit" class="btn btn-primary btn-block mt-2">Book Now</button>
+                    <div class="input-row">
+                      <label>Adultes</label>
+                      <input type="number" [(ngModel)]="br.adults" [name]="'adults'+i" min="1" [max]="br.room.capacity - (br.children || 0)" (ngModelChange)="normalizeOccupancy(br)"
+                        required>
+                    </div>
+
+                    <div class="input-row">
+                      <label>Enfants (2-11 ans)</label>
+                      <input type="number" [(ngModel)]="br.children" [name]="'children'+i" min="0" [max]="br.room.capacity - (br.adults || 0)" (ngModelChange)="normalizeOccupancy(br)"
+                        [max]="br.room.capacity - br.adults">
+                    </div>
+
+                    <div class="input-row">
+                      <label>Bébés (0-2 ans)</label>
+                      <input type="number" [(ngModel)]="br.babies" [name]="'babies'+i" min="0" max="5">
+                    </div>
+
+                    <p><b>{{ br.room.price }} TND</b> / nuit — Capacité : {{ br.room.capacity }}</p>
+
+                    <button type="button" class="remove-room" *ngIf="bookingRooms.length > 1" (click)="removeRoom(i)">
+                      Supprimer cette chambre
+                    </button>
+                  </div>
+
+                  <!-- Dropdown to add a new room -->
+                  <div *ngIf="hotel.rooms?.length" class="mt-2">
+                    <select [(ngModel)]="selectedRoomToAdd" name="selectRoom" class="form-select mb-2 room-select">
+                      <option [ngValue]="null">-- Choisir une chambre --</option>
+                      <option *ngFor="let r of hotel.rooms" [ngValue]="r">
+                        {{ r.name }} - {{ r.capacity }} personnes — {{ r.price }} TND
+                      </option>
+                    </select>
+
+                    <button type="button" class="btn btn-success" (click)="addRoom(selectedRoomToAdd)"
+                      [disabled]="!selectedRoomToAdd">
+                      + Ajouter cette chambre
+                    </button>
+                  </div>
+                  <div class="mt-3 p-2" style="border-top:1px solid #eee;">
+  <p style="margin:0;">
+    <b>Total personnes (adultes + enfants):</b> {{ getTotalGuests() }}
+  </p>
+  <p style="margin:0;">
+    <b>Total / nuit:</b> {{ getTotalPerNight() }} TND
+    <small class="text-muted">(bébés non inclus)</small>
+  </p>
+</div>
+
+                  <div class="modal-actions mt-3">
+                    <button type="button" class="btn btn-primary" (click)="closeRoomModal()">Valider</button>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="bookingError" class="booking-error">
+  {{ bookingError }}
+</div>
+
+<button type="submit" class="btn btn-primary btn-block mt-2">Réserver</button>
+<div *ngIf="bookingMessage" class="booking-error">
+  {{ bookingMessage }}
+</div>
+
             </form>
           </div>
         </div>
       </div>
 
-      <!-- Description -->
-      <!-- Description + About + Programme -->
+      <!-- Description / About / Programme -->
       <div class="row mb-4">
         <div class="col-md-12">
-          <!-- Description -->
           <h4>Description</h4>
           <p>{{hotel.description}}</p>
-
-          <!-- About / Apropos -->
-          <h4 class="mt-4">About the Hotel</h4>
-          <p>{{hotel.apropos}}</p>
-
-          <!-- Programme -->
+          <h4 class="mt-4">À propos de l'hôtel</h4>
+          <p>{{hotel.about}}</p>
           <h4 class="mt-4">Programme</h4>
           <ul class="programme-list list-group list-group-flush">
             <li class="list-group-item" *ngFor="let day of hotel.programme">
-              <strong>Day {{day.day}}:</strong> {{day.activity}}
+              <strong>Jour {{day.day}} :</strong> {{day.activity}}
             </li>
           </ul>
         </div>
       </div>
 
-
       <!-- Highlights -->
-      <div class="row mb-4">
+      <div class="row mb-4" *ngIf="hotel.highlights?.length">
         <div class="col-md-12">
-          <h4>Why Guests Love This Hotel</h4>
+          <h4>Pourquoi les clients adorent cet hôtel</h4>
           <div class="highlights d-flex flex-wrap gap-3">
             <div class="highlight-item" *ngFor="let h of hotel.highlights">
               <span class="fa fa-check-circle text-success"></span> {{h}}
@@ -121,17 +207,15 @@
       <!-- Room Types -->
       <div class="row mb-4" *ngIf="hotel.rooms?.length">
         <div class="col-md-12">
-          <h4>Available Room Types</h4>
+          <h4>Types de chambres disponibles</h4>
         </div>
-
-        <div class="col-md-4 mb-3" *ngFor="let r of hotel.rooms">
-          <div class="card room-card">
-            <img [src]="r.image" class="card-img-top" alt="{{r.name}}">
-            <div class="card-body">
+        <div class="col-md-4 mb-3 d-flex" *ngFor="let r of hotel.rooms">
+          <div class="card room-card flex-fill">
+            <img [src]="'images/' + r.image" class="card-img-top" alt="{{ r.name }}">
+            <div class="card-body d-flex flex-column">
               <h5>{{r.name}}</h5>
-              <p class="text-muted">{{r.description}}</p>
-              <p><b>${{r.price}}</b> / night - Sleeps: {{r.capacity}}</p>
-              <button class="btn btn-outline-success btn-block">Book Room</button>
+              <p class="text-muted flex-grow-1">{{r.description}}</p>
+              <p><b>{{r.price}} TND</b> / nuit - Capacité : {{r.capacity}}</p>
             </div>
           </div>
         </div>
@@ -140,71 +224,152 @@
       <!-- Location + Nearby -->
       <div class="row mb-4">
         <div class="col-md-8">
-          <h4>Where You'll Stay</h4>
+          <h4>Où vous séjournerez</h4>
           <iframe width="100%" height="300" style="border:0;border-radius:10px;" loading="lazy" allowfullscreen>
           </iframe>
         </div>
-
         <div class="col-md-4">
-          <h4>Popular Places Nearby</h4>
+          <h4>Lieux populaires à proximité</h4>
           <ul class="nearby">
             <li *ngFor="let p of hotel.nearby">
-              <span class="fa fa-map-marker text-danger"></span> {{p.name}} – {{p.distance}}
+              <span class="fa fa-map-marker text-danger"></span> {{p.name}} - {{p.distance}} KM
             </li>
           </ul>
+        </div>
+      </div>
+
+      <!-- Extra Information -->
+      <div class="accordion" id="hotelExtraAccordion">
+        <h4 class="mb-3">Informations sur l'hôtel</h4>
+
+        <!-- Travel Tips -->
+        <div class="card" *ngIf="hotel.travelTips?.length">
+          <div class="card-header" (click)="toggleAccordion('tips')">
+            <h6>Conseils de voyage</h6>
+            <span class="toggle-icon">{{ accordionOpen['tips'] ? '-' : '+' }}</span>
+          </div>
+          <div class="collapse" [class.show]="accordionOpen['tips']">
+            <ul>
+              <li *ngFor="let tip of hotel.travelTips">{{ tip }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Suited For -->
+        <div class="card" *ngIf="hotel.suitedFor?.length">
+          <div class="card-header" (click)="toggleAccordion('suited')">
+            <h6>Idéal pour</h6>
+            <span class="toggle-icon">{{ accordionOpen['suited'] ? '-' : '+' }}</span>
+          </div>
+          <div class="collapse" [class.show]="accordionOpen['suited']">
+            <ul>
+              <li *ngFor="let item of hotel.suitedFor">{{ item }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Includes / Excludes -->
+        <div class="card" *ngIf="hotel.includes?.length || hotel.excludes?.length">
+          <div class="card-header" (click)="toggleAccordion('includeExclude')">
+            <h6>Inclus / Non inclus</h6>
+            <span class="toggle-icon">{{ accordionOpen['includeExclude'] ? '-' : '+' }}</span>
+          </div>
+          <div class="collapse" [class.show]="accordionOpen['includeExclude']">
+            <div *ngIf="hotel.includes?.length">
+              <h6>Inclus :</h6>
+              <ul>
+                <li *ngFor="let item of hotel.includes">{{ item }}</li>
+              </ul>
+            </div>
+            <div *ngIf="hotel.excludes?.length">
+              <h6>Non inclus :</h6>
+              <ul>
+                <li *ngFor="let item of hotel.excludes">{{ item }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cancellation Policy -->
+        <div class="card" *ngIf="hotel.cancellationPolicy">
+          <div class="card-header" (click)="toggleAccordion('policy')">
+            <h6>Politique d’annulation</h6>
+            <span class="toggle-icon">{{ accordionOpen['policy'] ? '-' : '+' }}</span>
+          </div>
+          <div class="collapse" [class.show]="accordionOpen['policy']">
+            <p>{{ hotel.cancellationPolicy }}</p>
+          </div>
+        </div>
+
+        <!-- Available Dates -->
+        <div class="card" *ngIf="hotel.availableDates">
+          <div class="card-header" (click)="toggleAccordion('dates')">
+            <h6>Dates disponibles</h6>
+            <span class="toggle-icon">{{ accordionOpen['dates'] ? '-' : '+' }}</span>
+          </div>
+          <div class="collapse" [class.show]="accordionOpen['dates']">
+            <p>{{ hotel.availableDates }}</p>
+          </div>
+        </div>
+
+        <!-- Best Time to Visit -->
+        <div class="card" *ngIf="hotel.bestTimeToVisit">
+          <div class="card-header" (click)="toggleAccordion('bestTime')">
+            <h6>Meilleure période pour visiter</h6>
+            <span class="toggle-icon">{{ accordionOpen['bestTime'] ? '-' : '+' }}</span>
+          </div>
+          <div class="collapse" [class.show]="accordionOpen['bestTime']">
+            <p>{{ hotel.bestTimeToVisit }}</p>
+          </div>
         </div>
       </div>
 
       <!-- FAQ -->
       <div class="row mb-4" *ngIf="hotel.faq?.length">
         <div class="col-md-12">
-          <h4>Frequently Asked Questions</h4>
-
+          <h4>Questions fréquemment posées</h4>
           <div class="accordion" id="faqAccordion">
             <div class="card" *ngFor="let q of hotel.faq; let i=index">
               <div class="card-header" (click)="toggleFaq(i)">
                 <h6>{{q.question}}</h6>
+                <span class="toggle-icon">{{q.open ? '-' : '+'}}</span>
               </div>
               <div class="collapse" [class.show]="q.open">
-                <div class="card-body">
-                  {{q.answer}}
-                </div>
+                <div class="card-body">{{q.answer}}</div>
               </div>
             </div>
-          </div>
-
-        </div>
-      </div>
-
-
-      <!-- Reviews -->
-      <div class="row mb-4" *ngIf="hotel.reviews?.length">
-        <div class="col-md-12">
-          <h4>Guest Reviews</h4>
-          <div *ngFor="let review of hotel.reviews" class="review">
-            <strong>{{review.name}}</strong>
-            <span *ngFor="let star of [].constructor(review.stars)" class="fa fa-star text-warning"></span>
-            <p>{{review.comment}}</p>
           </div>
         </div>
       </div>
 
       <!-- Related Hotels -->
-      <div class="row">
+      <div class="row mb-4" *ngIf="relatedHotels.length">
         <div class="col-md-12">
-          <h4>Other Hotels You May Like</h4>
+          <h4>Autres hôtels susceptibles de vous plaire</h4>
           <div class="row">
-            <div class="col-md-4" *ngFor="let h of relatedHotels">
-              <div class="card related-card">
-                <img [src]="h.image" class="card-img-top" alt="{{h.name}}">
-                <div class="card-body">
-                  <h5>{{h.name}}</h5>
-                  <p class="text-muted">{{h.location}}</p>
-                  <a [routerLink]="['/hotel', h.id]" class="btn btn-outline-primary btn-block">View Details</a>
+            <div class="col-md-4 mb-4" *ngFor="let h of relatedHotels">
+              <div class="hotel-card d-flex flex-column">
+                <div class="hotel-img-wrapper">
+                  <div class="hotel-img"
+                    [ngStyle]="{'background-image': 'url(images/' + (h.images[0] || 'default.jpg') + ')'}">
+                    <span class="price">{{h.rooms?.[0]?.price || 0}} TND / nuit</span>
+                  </div>
+                </div>
+                <div class="hotel-content d-flex flex-column flex-grow-1">
+                  <h5 class="hotel-name">{{h.name}}</h5>
+                  <p class="text-muted mb-1"><span class="fa fa-map-marker"></span> {{h.city}} - {{h.country}}</p>
+                  <p class="stars mb-2">
+                    <span *ngFor="let star of getStars(h.stars || 0)" class="fa fa-star text-warning"></span>
+                  </p>
+                  <ul class="hotel-highlights d-flex flex-wrap gap-1 mb-2" style="list-style:none; padding:0;">
+                    <li *ngFor="let f of h.highlights | slice:0:3">
+                      <i [class]="getFacilityIcon(f)"></i> {{shortFacility(f)}}
+                    </li>
+                  </ul>
+                  <a [routerLink]="['/hotel', h.id]" class="btn btn-success mt-auto">Voir l'offre</a>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>

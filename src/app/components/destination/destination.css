@@ -1,0 +1,131 @@
+.project-wrap.destination {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
+  flex: 1 1 auto; /* ensures same height in row */
+}
+
+.project-wrap.destination:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.project-wrap.destination .img {
+  height: 260px; /* fixed height */
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  transition: transform 0.5s ease;
+  position: relative;
+}
+
+.project-wrap.destination:hover .img {
+  transform: scale(1.05);
+}
+
+.project-wrap.destination .text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ftco-animate {
+  opacity: 0;
+  animation-fill-mode: forwards;
+  animation-duration: 0.8s;
+  animation-timing-function: ease-out;
+}
+
+.ftco-animate.visible {
+  opacity: 1;
+  animation-name: fadeInUp;
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.col-md-4 {
+  display: flex;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.search-wrap-1,
+.search-property-1,
+.form-group,
+.form-field {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.search-wrap-1 {
+  z-index: 99998 !important;
+}
+
+.suggestions-list {
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  left: 0 !important;
+  right: 0 !important;
+
+  background: #fff !important;
+  border: 1px solid #ddd !important;
+  max-height: 250px !important;
+  overflow-y: auto !important;
+
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+}
+
+.suggestions-list li {
+  display: block !important;
+  padding: 12px 14px !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.suggestions-list li:hover {
+  background: #28a745 !important;
+  color: #fff !important;
+}
+
+.form-field .icon {
+  pointer-events: none !important;
+}
+
+
+
+/* Date fields: no fake icon spacing */
+.form-field.no-left-icon input[type="date"] {
+  padding-left: 0px !important;
+  height: 52px; /* match theme */
+  color: #666;
+}
+/* Move calendar icon closer to the date text */
+.search-property-1 input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 30px;   /* ⬅ move left (try 8–14px if needed) */
+  cursor: pointer;
+}
+
+/* Ensure input has room for the icon */
+.search-property-1 input[type="date"] {
+  padding-right: 40px !important;
+}

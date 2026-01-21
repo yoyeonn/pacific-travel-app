@@ -1,0 +1,124 @@
+<section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('images/bg_1.jpg');">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-center">
+      <div class="col-md-9 ftco-animate pb-5 text-center">
+        <p class="breadcrumbs"><span class="mr-2"><a routerLink="/">Accueil <i class="fa fa-chevron-right"></i></a></span>
+          <span>Hôtel <i class="fa fa-chevron-right"></i></span></p>
+        <h1 class="mb-0 bread">Hôtel</h1>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ftco-section ftco-no-pb">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="search-wrap-1 ftco-animate">
+          <form class="search-property-1" (ngSubmit)="search()" #f="ngForm">
+            <div class="row no-gutters">
+
+              <div class="col-lg d-flex">
+  <div class="form-group p-4 border-0" style="position: relative;">
+    <label for="#">Destination</label>
+    <div class="form-field">
+      <div class="icon"><span class="fa fa-search"></span></div>
+      <input
+        type="text"
+        name="searchKey"
+        class="form-control"
+        placeholder="Rechercher un lieu ou un hôtel"
+        [(ngModel)]="searchKey"
+        (input)="onInputChange()"
+        (keydown)="onKeyDown($event)"
+        (focus)="showSuggestions = suggestions.length > 0"
+        autocomplete="off"
+      />
+
+      <!-- Suggestions dropdown -->
+      <ul
+        class="suggestions-list"
+        *ngIf="showSuggestions && suggestions.length"
+        style="position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ddd; max-height: 200px; overflow-y: auto; z-index: 10; padding: 0; margin: 0; list-style: none;"
+      >
+        <li
+          *ngFor="let s of suggestions; let i = index"
+          (mousedown)="selectSuggestion(s)"
+          [class.active]="i === activeSuggestionIndex"
+          style="padding: 10px; cursor: pointer;"
+        >
+          {{ s }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+              <div class="col-lg d-flex">
+                <div class="form-group d-flex w-100 border-0">
+                  <div class="form-field w-100 align-items-center d-flex">
+                    <input type="submit"
+                    value="Rechercher"
+                    class="align-self-stretch form-control btn btn-primary">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="ftco-section">
+  <div class="container">
+    <div class="row">
+
+      <!-- Loop through hotels -->
+      <div *ngFor="let hotel of hotels" class="col-md-4 d-flex ftco-animate">
+        <div class="project-wrap hotel d-flex flex-column" [routerLink]="['/hotel', hotel.id]" style="cursor:pointer;">
+
+          <!-- Hotel Image -->
+          <div class="img"
+               [ngStyle]="{
+                 'background-image': 'url(images/' + (hotel.images[0] || 'default.jpg') + ')',
+                 'height': '250px',
+                 'background-size': 'cover',
+                 'background-position': 'center'
+               }">
+            <span class="price">{{ hotel?.rooms?.[0]?.price ?? 0 }} TND / personne</span>
+          </div>
+
+          <!-- Hotel Info -->
+          <div class="text p-4 flex-grow-1 d-flex flex-column">
+            
+            <!-- Star rating -->
+            <p class="star mb-2">
+              <span *ngFor="let star of getStars(hotel.stars || 0)" class="fa fa-star"></span>
+            </p>
+
+            <!-- Days & Name -->
+            <span class="days">{{ hotel.days || 1 }} Jours de séjour</span>
+            <h3>{{ hotel.name }}</h3>
+            <p class="location"><span class="fa fa-map-marker"></span> {{ hotel.city }} - {{ hotel.country }}</p>
+
+            <!-- Top 3 highlights -->
+            <ul class="hotel-icons d-flex mt-auto mb-2" style="list-style:none; padding:0; gap:10px;">
+              <li *ngFor="let f of hotel.highlights | slice:0:3">
+                <i [class]="getFacilityIcon(f)"></i> {{ shortFacility(f) }}
+              </li>
+            </ul>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
